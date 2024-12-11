@@ -3,6 +3,7 @@ document.getElementById('solve').addEventListener('click', solve);
 
 let array = [];
 
+// Generate the array and display bars
 function generateArray() {
   const visualizer = document.getElementById('visualizer');
   const arraySize = parseInt(document.getElementById('arraySize').value) || 10;
@@ -16,27 +17,42 @@ function generateArray() {
     const bar = document.createElement('div');
     bar.style.height = `${value * 3}px`;
     bar.classList.add('bar');
+    bar.style.backgroundColor = 'lightblue';
     visualizer.appendChild(bar);
   }
 }
 
+// Display complexity details
+function setComplexity(name, best, average, worst) {
+  document.getElementById('algorithmName').innerText = `Algorithm: ${name}`;
+  document.getElementById('timeBest').innerText = `Best Case: ${best}`;
+  document.getElementById('timeAverage').innerText = `Average Case: ${average}`;
+  document.getElementById('timeWorst').innerText = `Worst Case: ${worst}`;
+}
+
+// Sort array based on the selected algorithm
 async function solve() {
   const selectedAlgorithm = document.getElementById('algorithm').value;
 
   switch (selectedAlgorithm) {
     case 'bubbleSort':
+      setComplexity('Bubble Sort', 'O(n)', 'O(n²)', 'O(n²)');
       await bubbleSort();
       break;
     case 'selectionSort':
+      setComplexity('Selection Sort', 'O(n²)', 'O(n²)', 'O(n²)');
       await selectionSort();
       break;
     case 'insertionSort':
+      setComplexity('Insertion Sort', 'O(n)', 'O(n²)', 'O(n²)');
       await insertionSort();
       break;
     case 'mergeSort':
-      await mergeSort();
+      setComplexity('Merge Sort', 'O(n log n)', 'O(n log n)', 'O(n log n)');
+      await mergeSort(0, array.length - 1);
       break;
     case 'quickSort':
+      setComplexity('Quick Sort', 'O(n log n)', 'O(n log n)', 'O(n²)');
       await quickSort(0, array.length - 1);
       break;
     default:
@@ -44,7 +60,7 @@ async function solve() {
   }
 }
 
-// Bubble Sort
+// Bubble Sort Implementation
 async function bubbleSort() {
   const bars = document.getElementsByClassName('bar');
   for (let i = 0; i < array.length; i++) {
@@ -56,17 +72,19 @@ async function bubbleSort() {
         [array[j], array[j + 1]] = [array[j + 1], array[j]];
         bars[j].style.height = `${array[j] * 3}px`;
         bars[j + 1].style.height = `${array[j + 1] * 3}px`;
+        bars[j].style.backgroundColor = 'red';
+        bars[j + 1].style.backgroundColor = 'red';
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
-      bars[j].style.backgroundColor = '#f08080';
-      bars[j + 1].style.backgroundColor = '#f08080';
+      await pause(100);
+      bars[j].style.backgroundColor = 'lightblue';
+      bars[j + 1].style.backgroundColor = 'lightblue';
     }
     bars[array.length - i - 1].style.backgroundColor = 'green';
   }
 }
 
-// Selection Sort
+// Selection Sort Implementation
 async function selectionSort() {
   const bars = document.getElementsByClassName('bar');
   for (let i = 0; i < array.length; i++) {
@@ -77,12 +95,12 @@ async function selectionSort() {
       bars[j].style.backgroundColor = 'yellow';
 
       if (array[j] < array[minIndex]) {
-        if (minIndex !== i) bars[minIndex].style.backgroundColor = '#f08080';
+        if (minIndex !== i) bars[minIndex].style.backgroundColor = 'lightblue';
         minIndex = j;
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
-      bars[j].style.backgroundColor = '#f08080';
+      await pause(100);
+      bars[j].style.backgroundColor = 'lightblue';
     }
 
     if (minIndex !== i) {
@@ -94,7 +112,7 @@ async function selectionSort() {
   }
 }
 
-// Insertion Sort
+// Insertion Sort Implementation
 async function insertionSort() {
   const bars = document.getElementsByClassName('bar');
   for (let i = 1; i < array.length; i++) {
@@ -107,11 +125,11 @@ async function insertionSort() {
       bars[j + 1].style.height = `${array[j] * 3}px`;
       j--;
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await pause(100);
     }
     array[j + 1] = key;
     bars[j + 1].style.height = `${key * 3}px`;
-    bars[i].style.backgroundColor = '#f08080';
+    bars[i].style.backgroundColor = 'lightblue';
   }
 
   for (let k = 0; k < array.length; k++) {
@@ -119,8 +137,8 @@ async function insertionSort() {
   }
 }
 
-// Merge Sort
-async function mergeSort(start = 0, end = array.length - 1) {
+// Merge Sort Implementation
+async function mergeSort(start, end) {
   if (start >= end) return;
 
   const mid = Math.floor((start + end) / 2);
@@ -149,8 +167,8 @@ async function merge(start, mid, end) {
       j++;
     }
     k++;
-    await new Promise(resolve => setTimeout(resolve, 100));
-    bars[k - 1].style.backgroundColor = '#f08080';
+    await pause(100);
+    bars[k - 1].style.backgroundColor = 'lightblue';
   }
 
   while (i < left.length) {
@@ -158,7 +176,7 @@ async function merge(start, mid, end) {
     bars[k].style.height = `${array[k] * 3}px`;
     i++;
     k++;
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await pause(100);
   }
 
   while (j < right.length) {
@@ -166,7 +184,7 @@ async function merge(start, mid, end) {
     bars[k].style.height = `${array[k] * 3}px`;
     j++;
     k++;
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await pause(100);
   }
 
   for (let l = start; l <= end; l++) {
@@ -174,7 +192,7 @@ async function merge(start, mid, end) {
   }
 }
 
-// Quick Sort
+// Quick Sort Implementation
 async function quickSort(low, high) {
   if (low < high) {
     const pi = await partition(low, high);
@@ -198,16 +216,21 @@ async function partition(low, high) {
       bars[i].style.height = `${array[i] * 3}px`;
       bars[j].style.height = `${array[j] * 3}px`;
     }
-    await new Promise(resolve => setTimeout(resolve, 100));
-    bars[j].style.backgroundColor = '#f08080';
+    await pause(100);
+    bars[j].style.backgroundColor = 'lightblue';
   }
   [array[i + 1], array[high]] = [array[high], array[i + 1]];
   bars[i + 1].style.height = `${array[i + 1] * 3}px`;
   bars[high].style.height = `${array[high] * 3}px`;
 
-  await new Promise(resolve => setTimeout(resolve, 100));
-  bars[high].style.backgroundColor = '#f08080';
+  await pause(100);
+  bars[high].style.backgroundColor = 'lightblue';
   bars[i + 1].style.backgroundColor = 'green';
 
   return i + 1;
+}
+
+// Utility function to pause execution
+function pause(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
